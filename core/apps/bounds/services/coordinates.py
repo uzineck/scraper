@@ -2,10 +2,8 @@ from dataclasses import dataclass
 from abc import ABC, abstractmethod
 
 from openpyxl.worksheet.worksheet import Worksheet
-from openpyxl.cell import Cell, MergedCell
 
-from core.bounds.entities.coordinates import StartCoordinates, EndCoordinates
-from core.common.target_word import get_target_word
+from core.apps.bounds.entities.coordinates import StartCoordinates, EndCoordinates
 from core.common.utils import Utils
 
 
@@ -39,7 +37,7 @@ class BoundsService(BaseBoundsService):
         return StartCoordinates(0, 0)
 
     def find_sheet_bounds(self) -> tuple[StartCoordinates, EndCoordinates]:
-        target_word = get_target_word(column=1, sheet_name=self.sheet_name)
+        target_word = Utils.get_target_word(column=1, sheet_name=self.sheet_name)
 
         start_coordinates = self.find_start_coordinates(self.sheet, target_word)
         start_row = start_coordinates.Row
