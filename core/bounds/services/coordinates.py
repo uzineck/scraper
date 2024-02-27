@@ -1,12 +1,12 @@
 from dataclasses import dataclass
 from abc import ABC, abstractmethod
 
-from openpyxl import Workbook
 from openpyxl.worksheet.worksheet import Worksheet
 from openpyxl.cell import Cell, MergedCell
 
 from core.bounds.entities.coordinates import StartCoordinates, EndCoordinates
 from core.common.target_word import get_target_word
+from core.common.utils import Utils
 
 
 @dataclass
@@ -20,7 +20,11 @@ class BaseBoundsService(ABC):
         ...
 
     @abstractmethod
-    def find_sheet_bounds(self):
+    def find_end_coordinates(self, start_row: int) -> EndCoordinates:
+        ...
+
+    @abstractmethod
+    def find_sheet_bounds(self) -> tuple[StartCoordinates, EndCoordinates]:
         ...
 
 
@@ -34,18 +38,18 @@ class BoundsService(BaseBoundsService):
 
         return StartCoordinates(0, 0)
 
-    def find_sheet_bounds(self):
+    def find_sheet_bounds(self) -> tuple[StartCoordinates, EndCoordinates]:
         target_word = get_target_word(column=1, sheet_name=self.sheet_name)
 
         start_coordinates = self.find_start_coordinates(self.sheet, target_word)
         start_row = start_coordinates.Row
-        start_column = start_coordinates.Column
+        # start_column = start_coordinates.Column
 
         end_coordinates = self.find_end_coordinates(start_row=start_row)
-        end_row = end_coordinates.Row
-        end_column = end_coordinates.Column
+        # end_row = end_coordinates.Row
+        # end_column = end_coordinates.Column
 
-        return (start_column, start_row), (end_column, end_row)
+        return start_coordinates, end_coordinates
 
     def find_end_coordinates(self, start_row: int) -> EndCoordinates:
         end_column = self._find_end_column(start_row)
@@ -76,20 +80,11 @@ class BoundsService(BaseBoundsService):
         for row_coord in range(start_row, max_row):
             cell = self.sheet.cell(row=row_coord, column=end_column)
             if cell.value is not None:
-                merged_cell = self.is_merged_cell(self.sheet, cell)
+                merged_cell = Utils.is_merged_cell(self.sheet, cell)
                 if merged_cell:
                     end_row_coord = merged_cell.max_row
                 else:
                     end_row_coord = row_coord
         return end_row_coord
-
-    @staticmethod
-    def is_merged_cell(sheet: Worksheet, cell: Cell) -> MergedCell | bool:
-        cell_coordinate = cell.coordinate
-        if cell_coordinate in sheet.merged_cells:
-            for merged_cell in sheet.merged_cells.ranges:
-                if cell_coordinate in merged_cell:
-                    return merged_cell
-        return False
 
 

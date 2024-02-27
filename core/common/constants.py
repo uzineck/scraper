@@ -7,7 +7,7 @@ class BOOK_NAMES(Enum):
 
 class EXCEPTION_VALUES(Enum):
     SHEET_NAME_EXCEPTIONS = ('4201-4202', '5201-5202', '6201-6202')
-    GROUP_ROW_VALUES = ('Ауд.', 'AUD.', 'День', 'DAY', 'Пари', 'LES.', None)
+    GROUP_ROW_VALUES = ('Ауд.', 'AUD.', 'День', 'DAY', 'Пари', 'LES.')
 
 
 class CHECK_VALUES(Enum):
