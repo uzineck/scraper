@@ -7,7 +7,7 @@ from core.common.utils import Utils
 from core.apps.bounds.services.coordinates import BoundsService
 from core.apps.bounds.entities.coordinates import StartCoordinates
 from core.apps.daysNnumbers.entities.days import Day, DayCoordinates
-from core.apps.daysNnumbers.entities.classesc_count import ClassNumber, ClassNumberCoordinates
+from core.apps.daysNnumbers.entities.classes_count import ClassNumber, ClassNumberCoordinates
 
 
 @dataclass
