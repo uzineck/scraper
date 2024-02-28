@@ -18,7 +18,7 @@ class BaseGroups(ABC):
     @abstractmethod
     def get_groups_from_sheet(self,
                               bounds_coordinates: tuple[StartCoordinates, EndCoordinates],
-                              ) -> Mapping[Group, GroupCoordinates]:
+                              ) -> dict[Group, GroupCoordinates]:
         ...
 
 

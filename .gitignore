@@ -4,3 +4,4 @@
 *.json
 .env
 *.txt
+json_schedules
