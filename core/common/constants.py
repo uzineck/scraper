@@ -12,9 +12,9 @@ class EXCEPTION_VALUES(Enum):
 
 class CHECK_VALUES(Enum):
     TEACHERS_RANKS = ('доц. (б.в.з.)', 'доц.(б.в.з.)', 'доц. б.в.з.', 'доц.б.в.з.', 'доц.',
-                      'ст. викл.', 'ст.викл.', 'викл.',
                       'проф. (б.в.з.)', 'проф.(б.в.з.)', 'проф. б.в.з.', 'проф.б.в.з.', 'проф.',
+                      'б.в.з.',
+                      'ст. викл.', 'ст.викл.', 'викл.',
                       'асп.',
-                      'senior lecturer', 'lecturer'
-                      'associate professor', 'professor',
-                      )
+                      'senior lecturer', 'lecturer',
+                      'associate professor', 'professor',)

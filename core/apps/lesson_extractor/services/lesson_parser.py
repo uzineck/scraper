@@ -18,8 +18,11 @@ class BaseLessonParser(ABC):
 
 
 class LessonParserService(BaseLessonParser):
+    rank_pattern = None
+
     def __init__(self):
-        self.rank_pattern = '|'.join(re.escape(rank) for rank in self.teacher_ranks)
+        if LessonParserService.rank_pattern is None:
+            LessonParserService.rank_pattern = '|'.join(re.escape(rank) for rank in self.teacher_ranks)
 
     def parse_string(self, string: str):
         if string is None:
@@ -36,46 +39,37 @@ class LessonParserService(BaseLessonParser):
 
         divider = min(indexes) if indexes else len(string)
 
-        lesson = string[:divider].replace("\n", "").strip(" ")
-        teacher = string[divider:].replace("\n", "").strip(" ")
+        lesson = string[:divider].replace("\n", "").strip()
+        teacher = string[divider:].replace("\n", "").strip()
 
-        lesson_type, lesson = self._lesson_type_scenario(lesson=lesson)
-        additional_info, teacher = self._additional_info_scenario(teacher=teacher)
         teacher = self._teachers_scenario(teacher=teacher)
 
-        return {"Lesson": lesson.strip(),
-                "Teacher": teacher,
-                "LessonType": lesson_type.strip() if lesson_type else None,
-                "AdditionalInfo": additional_info if additional_info else None}
+        return {"Lesson": lesson,
+                "Teacher": teacher}
 
     def parse_slash_string(self, string: str):
         string_list = string.split('/')
 
         lessons = []
         teachers = []
-        lesson_type = []
-        additional_info = []
 
         for string in string_list:
             lesson_teacher_dict = self.parse_string_without_additions(string=string)
             lessons.append(lesson_teacher_dict["Lesson"])
             teachers.append(lesson_teacher_dict["Teacher"])
-            lesson_type.append(lesson_teacher_dict["LessonType"])
-            additional_info.append(lesson_teacher_dict["AdditionalInfo"])
 
         return {"Lesson": lessons,
-                "Teacher": teachers,
-                "LessonType": lesson_type[0],
-                "AdditionalInfo": additional_info[-1]}
+                "Teacher": teachers}
 
-    def _teachers_scenario(self, teacher: str):
+    @staticmethod
+    def _teachers_scenario(teacher: str):
         if "," not in teacher:
             return teacher.strip()
 
         teachers = re.split(r',(?![^(]*\))', teacher)
         return [teacher.strip() for teacher in teachers]
 
-    def _lesson_type_scenario(self, lesson: str):
+    def _lesson_type_scenario(self, lesson: str | list):
         lesson_type = re.search(r'(.+):', lesson)
 
         if not lesson_type:
@@ -89,7 +83,8 @@ class LessonParserService(BaseLessonParser):
         additional_info = []
 
         additional_info_pattern = re.search(r'\(([^()]+)\)', teacher)
-        if additional_info_pattern:
+        if additional_info_pattern and additional_info_pattern.group(1) not in self.teacher_ranks:
+
             additional_info.append(additional_info_pattern.group(1))
             teacher = teacher.replace(f"({additional_info_pattern.group(1)})", "").strip()
 
@@ -103,4 +98,3 @@ class LessonParserService(BaseLessonParser):
             return False, teacher
 
         return additional_info, teacher
-
